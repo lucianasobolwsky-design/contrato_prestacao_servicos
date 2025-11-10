@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contrato de Prestação de Serviços - Guia Interativo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+            animation: fadeInDown 0.8s ease;
+        }
+        
+        h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .subtitle {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .mind-map {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+        }
+        
+        .central-node {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+            color: white;
+            padding: 40px 60px;
+            border-radius: 50px;
+            font-size: 1.8em;
+            font-weight: bold;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            animation: pulse 2s infinite;
+            text-align: center;
+        }
+        
+        .central-node:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+        }
+        
+        .branches {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            width: 100%;
+            margin-top: 20px;
+        }
+        
+        .branch {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .branch::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+        
+        .branch:hover::before {
+            transform: scaleX(1);
+        }
+        
+        .branch:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+        }
+        
+        .branch-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .branch-icon {
+            font-size: 2.5em;
+            filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.1));
+        }
+        
+        .branch-title {
+            font-size: 1.4em;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .branch-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease, opacity 0.3s ease;
+            opacity: 0;
+            color: #555;
+            line-height: 1.6;
+        }
+        
+        .branch.active .branch-content {
+            max-height: 2000px;
+            opacity: 1;
+            margin-top: 15px;
+        }
+        
+        .branch-content ul {
+            margin-left: 20px;
+            margin-top: 10px;
+        }
+        
+        .branch-content li {
+            margin-bottom: 8px;
+            position: relative;
+            padding-left: 10px;
+        }
+        
+        .branch-content li::before {
+            content: '▸';
+            position: absolute;
+            left: -10px;
+            color: #667eea;
+            font-weight: bold;
+        }
+        
+        .highlight-box {
+            background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border-left: 5px solid #f39c12;
+            font-weight: 500;
+        }
+        
+        .info-box {
+            background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            font-weight: 500;
+        }
+        
+        .warning-box {
+            background: linear-gradient(135deg, #ff7675 0%, #d63031 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            font-weight: 500;
+        }
+        
+        .legal-ref {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            margin: 10px 0;
+            border-left: 3px solid #667eea;
+        }
+        
+        .expand-indicator {
+            display: inline-block;
+            margin-left: 10px;
+            transition: transform 0.3s ease;
+            font-size: 0.8em;
+            color: #667eea;
+        }
+        
+        .branch.active .expand-indicator {
+            transform: rotate(90deg);
+        }
+        
+        .legend {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            margin-top: 40px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+        
+        .legend-title {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .legend-items {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+        
+        .color-sample {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+        
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.02);
+            }
+        }
+        
+        .floating-help {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: white;
+            padding: 20px;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8em;
+            cursor: pointer;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .floating-help:hover {
+            transform: scale(1.1) rotate(10deg);
+            background: #667eea;
+        }
+        
+        .help-tooltip {
+            position: fixed;
+            bottom: 100px;
+            right: 30px;
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            max-width: 300px;
+            display: none;
+            z-index: 999;
+            animation: fadeInDown 0.3s ease;
+        }
+        
+        .help-tooltip.show {
+            display: block;
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2em;
+            }
+            
+            .branches {
+                grid-template-columns: 1fr;
+            }
+            
+            .central-node {
+                padding: 30px 40px;
+                font-size: 1.4em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📋 Contrato de Prestação de Serviços</h1>
+            <p class="subtitle">Explore o Mapa Interativo - Clique nos elementos para descobrir mais</p>
+        </header>
+
+        <div class="mind-map">
+            <div class="central-node" onclick="toggleAll()">
+                🎯 CONTRATO DE<br>PRESTAÇÃO DE SERVIÇOS
+            </div>
+
+            <div class="branches">
+                <div class="branch" onclick="toggleBranch(this)">
+                    <div class="branch-header">
+                        <div class="branch-icon">⚖️</div>
+                        <div>
+                            <div class="branch-title">Fundamento Legal</div>
+                            <span class="expand-indicator">►</span>
+                        </div>
+                    </div>
+                    <div class="branch-content">
+                        <div class="legal-ref">
+                            <strong>Código Civil:</strong> Arts. 593-609 (prestação de serviços) + Arts. 421-480 (contratos em geral)
+                        </div>
+                        <ul>
+                            <li><strong>CDC</strong> - Lei 8.078/1990 (relações de consumo)</li>
+                            <li><strong>CLT</strong> - Art. 3º (evitar vínculo empregatício)</li>
+                            <li><strong>Art. 104 CC</strong> - Elementos de validade do negócio jurídico</li>
+                        </ul>
+                        <div class="info-box">
+                            💡 A base legal garante segurança jurídica e previsibilidade na relação contratual
+                        </div>
+                    </div>
+                </div>
+
+                <div class="branch" onclick="toggleBranch(this)">
+                    <div class="branch-header">
+                        <div class="branch-icon">👥</div>
+                        <div>
+                            <div class="branch-title">Qualificação das Partes</div>
+                            <span class="expand-indicator">►</span>
+                        </div>
+                    </div>
+                    <div class="branch-content">
+                        <p><strong>Informações essenciais:</strong></p>
+                        <ul>
+                            <li>Nome completo ou razão social</li>
+                            <li>CPF ou CNPJ</li>
+                            <li>Endereço completo atualizado</li>
+                            <li>Representante legal (se PJ)</li>
+                            <li>E-mails e telefones para notificações</li>
+                        </ul>
+                        <div class="highlight-box">
+                            ⚠️ Identificação precisa evita dúvidas sobre quem são as partes contratantes
+                        </div>
+                    </div>
+                </div>
+
+                <div class="branch" onclick="toggleBranch(this)">
+                    <div class="branch-header">
+                        <div class="branch-icon">🎯</div>
+                        <div>
+                            <div class="branch-title">Objeto do Contrato</div>
+                            <span class="expand-indicator">►</span>
+                        </div>
+                    </div>
+                    <div class="branch-content">
+                        <p><strong>Descrição detalhada do serviço:</strong></p>
+                        <ul>
+                            <li>Natureza técnica da atividade</li>
+                            <li>Forma e metodologia de execução</li>
+                            <li>Local de realização dos serviços</li>
+                            <li>Padrões de qualidade esperados</li>
+                            <li>Especificações técnicas (anexos)</li>
+                        </ul>
+                        <div class="highlight-box">
+                            <strong>Exemplo prático:</strong><br>
+                            "Prestação de serviços de consultoria administrativa, conforme escopo técnico detalhado no Anexo I, incluindo diagnóstico, elaboração de relatórios e apresentação de resultados."
+                        </div>
+                    </div>
+                </div>
+
+                <div class="branch" onclick="toggleBranch(this)">
+                    <div class="branch-header">
+                        <div class="branch-icon">⏰</div>
+                        <div>
+                            <div class="branch-title">Prazo de Execução</div>
+                            <span class="expand-indicator">►</span>
+                        </div>
+                    </div>
+                    <div class="branch-content">
+                        <ul>
+                            <li><strong>Início:</strong> Data específica ou evento</li>
+                            <li><strong>Término:</strong> Data final ou conclusão</li>
+                            <li><strong>Cronograma:</strong> Etapas e marcos</li>
+                            <li><strong>Prorrogação:</strong> Condições via aditivo</li>
+                            <li><strong>Suspensão:</strong> Hipóteses justificáveis</li>
+                        </ul>
+                        <div class="info-box">
+                            📅 Prazos claros garantem previsibilidade e facilitam o planejamento de ambas as partes
+                        </div>
+                    </div>
+                </div>
+
+                <div class="branch" onclick="toggleBranch(this)">
+                    <div class="branch-header">
+                        <div class="branch-icon">💰</div>
+                        <div>
+                            <div class="branch-title">Remuneração</div>
+                            <span class="expand-indicator">►</span>
+                        </div>
+                    </div>
+                    <div class="branch-content">
+                        <p><strong>Definições importantes:</strong></p>
+                        <ul>
+                            <li>Valor total, por hora ou por etapa</li>
+                            <li>Forma de pagamento (PIX, boleto, transferência)</li>
+                            <li>Periodicidade (semanal, quinzenal, mensal)</li>
+                            <li>Índice de reajuste (IPCA, IGP-M)</li>
+                            <li>Multa e juros por inadimplemento</li>
+                            <li>Despesas reembolsáveis</li>
+                        </ul>
+                        <div class="highlight-box">
+                            💡 Transparência financeira previne conflitos e garante o cumprimento das obrigações pecuniárias
+                        </div>
+                    </div>
+                </div>
+
+                <div class="branch" onclick="toggleBranch(this)">
+                    <div class="branch-header">
+                        <div class="branch-icon">📝</div>
+                        <div>
+                            <div class="branch-title">Obrigações</div>
+                            <span class="expand-indicator">►</span>
+                        </div>
+                    </div>
+                    <div class="branch-content">
+                        <p><strong>Do CONTRATADO:</strong></p>
+                        <ul>
+                            <li>Executar com técnica, zelo e diligência</li>
+                            <li>Cumprir prazos e padrões acordados</li>
+                            <li>Manter sigilo sobre informações</li>
+                            <li>Comunicar imprevistos prontamente</li>
+                        </ul>
+                        <p><strong>Do CONTRATANTE:</strong></p>
+                        <ul>
+                            <li>Fornecer informações necessárias</li>
+                            <li>Efetuar pagamentos nos prazos</li>
+                            <li>Cooperar na execução dos serviços</li>
+                            <li>Receber e avaliar os resultados</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="branch" onclick="toggleBranch(this)">
+                    <div class="branch-header">
+                        <div class="branch-icon">🛡️</div>
+                        <div>
+                            <div class="branch-title">Responsabilidade</div>
+                            <span class="expand-indicator">►</span>
+                        </div>
+                    </div>
+                    <div class="branch-content">
+                        <div class="legal-ref">
+                            Art. 927, CC: Responsabilidade por danos causados por dolo ou culpa
+                        </div>
+                        <ul>
+                            <li>Responsabilidade por vícios e defeitos</li>
+                            <li>Excludentes: força maior e caso fortuito</li>
+                            <li>Seguro de responsabilidade civil (se aplicável)</li>
+                            <li>Limitação de responsabilidade (se permitida)</li>
+                        </ul>
+                        <div class="warning-box">
+                            ⚠️ A definição clara de responsabilidades protege ambas as partes de litígios futuros
+                        </div>
+                    </div>
+                </div>
+
+                <div class="branch" onclick="toggleBranch(this)">
+                    <div class="branch-header">
+                        <div class="branch-icon">❌</div>
+                        <div>
+                            <div class="branch-title">Rescisão</div>
+                            <span class="expand-indicator">►</span>
+                        </div>
+                    </div>
+                    <div class="branch-content">
+                        <p><strong>Modalidades de rescisão:</strong></p>
+                        <ul>
+                            <li><strong>Por justa causa:</strong> descumprimento grave</li>
+                            <li><strong>Por conveniência:</strong> com aviso prévio</li>
+                            <li><strong>Por consenso:</strong> acordo mútuo</li>
+                            <li><strong>Por força maior:</strong> eventos extraordinários</li>
+                        </ul>
+                        <div class="highlight-box">
+                            <strong>Aviso prévio:</strong> Mínimo de 30 dias (recomendado)<br>
+                            <strong>Multa rescisória:</strong> Proporcional e não abusiva<br>
+                            <strong>Pagamento proporcional:</strong> Pelos serviços já executados
+                        </div>
+                    </div>
+                </div>
+
+                <div class="branch" onclick="toggleBranch(this)">
+                    <div class="branch-header">
+                        <div class="branch-icon">🔒</div>
+                        <div>
+                            <div class="branch-title">Confidencialidade</div>
+                            <span class="expand-indicator">►</span>
+                        </div>
+                    </div>
+                    <div class="branch-content">
+                        <p><strong>Proteção de informações:</strong></p>
+                        <ul>
+                            <li>Dados comerciais e estratégicos</li>
+                            <li>Informações técnicas e processos</li>
+                            <li>Dados pessoais (LGPD - Lei 13.709/2018)</li>
+                            <li>Segredos de negócio e know-how</li>
+                        </ul>
+                        <div class="info-box">
+                            🔐 A cláusula de confidencialidade protege ativos intangíveis e previne concorrência desleal
+                        </div>
+                        <p><strong>Prazo:</strong> Durante e após o contrato (geralmente 2-5 anos)</p>
+                    </div>
+                </div>
+
+                <div class="branch" onclick="toggleBranch(this)">
+                    <div class="branch-header">
+                        <div class="branch-icon">©️</div>
+                        <div>
+                            <div class="branch-title">Prop. Intelectual</div>
+                            <span class="expand-indicator">►</span>
+                        </div>
+                    </div>
+                    <div class="branch-content">
+                        <p><strong>Titularidade de direitos:</strong></p>
+                        <ul>
+                            <li>Obras criadas durante a prestação</li>
+                            <li>Softwares e códigos desenvolvidos</li>
+                            <li>Relatórios e documentos técnicos</li>
+                            <li>Marcas e designs criados</li>
+                        </ul>
+                        <div class="highlight-box">
+                            <strong>Opções:</strong><br>
+                            • Titularidade do CONTRATANTE (mais comum)<br>
+                            • Titularidade do CONTRATADO com licença de uso<br>
+                            • Cotitularidade (casos específicos)
+                        </div>
+                    </div>
+                </div>
+
+                <div class="branch" onclick="toggleBranch(this)">
+                    <div class="branch-header">
+                        <div class="branch-icon">🏛️</div>
+                        <div>
+                            <div class="branch-title">Foro e Conflitos</div>
+                            <span class="expand-indicator">►</span>
+                        </div>
+                    </div>
+                    <div class="branch-content">
+                        <p><strong>Jurisdição competente:</strong></p>
+                        <div class="legal-ref">
+                            "Fica eleito o foro da Comarca de [Cidade/Estado], com renúncia a qualquer outro, por mais privilegiado que seja."
+                        </div>
+                        <p><strong>Métodos alternativos:</strong></p>
+                        <ul>
+                            <li><strong>Mediação:</strong> Tentativa de conciliação</li>
+                            <li><strong>Arbitragem:</strong> Lei 9.307/96 (mais rápida)</li>
+                            <li><strong>Conciliação prévia:</strong> Antes do judicial</li>
+                        </ul>
+                        <div class="info-box">
+                            ⚖️ Métodos alternativos podem reduzir custos e tempo na resolução de disputas
+                        </div>
+                    </div>
+                </div>
+
+                <div class="branch" onclick="toggleBranch(this)">
+                    <div class="branch-header">
+                        <div class="branch-icon">✨</div>
+                        <div>
+                            <div class="branch-title">Princípios Jurídicos</div>
+                            <span class="expand-indicator">►</span>
+                        </div>
+                    </div>
+                    <div class="branch-content">
+                        <p><strong>Pilares fundamentais:</strong></p>
+                        <ul>
+                            <li><strong>Boa-fé objetiva (Art. 422, CC):</strong> Comportamento leal e transparente</li>
+                            <li><strong>Função social (Art. 421, CC):</strong> Finalidade econômica e social</li>
+                            <li><strong>Equilíbrio contratual:</strong> Evitar cláusulas abusivas</li>
+                            <li><strong>Autonomia da vontade:</strong> Liberdade dentro dos limites legais</li>
+                            <li><strong>Probidade e confiança:</strong> Base das relações contratuais</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="legend">
+                <div class="legend-title">🎨 Guia de Cores e Significados</div>
+                <div class="legend-items">
+                    <div class="legend-item">
+                        <div class="color-sample" style="background: linear-gradient(135deg, #ffeaa7, #fdcb6e);"></div>
+                        <span><strong>Amarelo:</strong> Exemplos e Destaques</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="color-sample" style="background: linear-gradient(135deg, #74b9ff, #0984e3);"></div>
+                        <span><strong>Azul:</strong> Informações Importantes</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="color-sample" style="background: linear-gradient(135deg, #ff7675, #d63031);"></div>
+                        <span><strong>Vermelho:</strong> Alertas e Avisos</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="color-sample" style="background: #f8f9fa; border: 2px solid #667eea;"></div>
+                        <span><strong>Cinza:</strong> Referências Legais</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="floating-help" onclick="toggleHelp()">💡</div>
+    <div class="help-tooltip" id="helpTooltip">
+        <h3 style="margin-bottom: 10px; color: #667eea;">Como usar este mapa:</h3>
+        <ul style="margin-left: 20px; line-height: 1.8;">
+            <li><strong>Clique</strong> em qualquer seção para expandir</li>
+            <li><strong>Explore</strong> os detalhes de cada elemento</li>
+            <li><strong>Observe</strong> as cores para identificar informações</li>
+            <li><strong>Clique no centro</strong> para expandir tudo</li>
+        </ul>
+    </div>
+
+    <script>
+        function toggleBranch(element) {
+            element.classList.toggle('active');
+        }
+
+        function toggleAll() {
+            const branches = document.querySelectorAll('.branch');
+            const anyActive = Array.from(branches).some(b => b.classList.contains('active'));
+            
+            branches.forEach(branch => {
+                if (anyActive) {
+                    branch.classList.remove('active');
+                } else {
+                    branch.classList.add('active');
+                }
+            });
+        }
+
+        function toggleHelp() {
+            const tooltip = document.getElementById('helpTooltip');
+            tooltip.classList.toggle('show');
+        }
+
+        // Fechar tooltip ao clicar fora
+        document.addEventListener('click', function(event) {
+            const tooltip = document.getElementById('helpTooltip');
+            const helpButton = document.querySelector('.floating-help');
+            
+            if (!tooltip.contains(event.target) && !helpButton.contains(event.target)) {
+                tooltip.classList.remove('show');
+            }
+        });
+    </script>
+</body>
+</html>
